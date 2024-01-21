@@ -4,7 +4,7 @@ index 502f5308b..3f28d00f1 100644
 +++ b/tools/rosbag_storage/package.xml
 @@ -1,5 +1,5 @@
 -<package>
--  <name>rosbag_storage</name>
+-  <name>ros1_rosbag_storage</name>
 +<package format="2">
 +  <name>ros1_rosbag_storage</name>
    <version>1.14.3</version>
@@ -13,8 +13,7 @@ index 502f5308b..3f28d00f1 100644
 @@ -8,35 +8,25 @@
    <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
    <license>BSD</license>
-
--  <buildtool_depend>catkin</buildtool_depend>
+-  <buildtool_depend>ament_cmake</buildtool_depend>
 +  <buildtool_depend>ament_cmake</buildtool_depend>
 
 +  <build_depend>ros1_bridge</build_depend>
@@ -56,3 +55,12 @@ index 502f5308b..3f28d00f1 100644
 +    <build_type>ament_cmake</build_type>
    </export>
  </package>
+<exec_depend>rostest</exec_depend>
+<exec_depend>rostime</exec_depend>
+<exec_depend>roslz4</exec_depend>
+<exec_depend>rostest</exec_depend>
+<exec_depend>rostime</exec_depend>
+<exec_depend>roslz4</exec_depend>
+<exec_depend>rostest</exec_depend>
+<exec_depend>rostime</exec_depend>
+<exec_depend>roslz4</exec_depend>
