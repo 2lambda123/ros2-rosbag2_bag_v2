@@ -42,70 +42,70 @@ using namespace rosbag2_test_common;  // NOLINT
 class PlayEndToEndTestFixture : public Test
 {
 public:
-  PlayEndToEndTestFixture()
-  {
-    database_path_ = _SRC_RESOURCES_DIR_PATH;  // variable defined in CMakeLists.txt
-    sub_ = std::make_unique<SubscriptionManager>();
-  }
+    PlayEndToEndTestFixture()
+    {
+        database_path_ = _SRC_RESOURCES_DIR_PATH;  // variable defined in CMakeLists.txt
+        sub_ = std::make_unique<SubscriptionManager>();
+    }
 
-  static void SetUpTestCase()
-  {
-    rclcpp::init(0, nullptr);
-  }
+    static void SetUpTestCase()
+    {
+        rclcpp::init(0, nullptr);
+    }
 
-  static void TearDownTestCase()
-  {
-    rclcpp::shutdown();
-  }
+    static void TearDownTestCase()
+    {
+        rclcpp::shutdown();
+    }
 
-  std::string database_path_;
-  std::unique_ptr<SubscriptionManager> sub_;
+    std::string database_path_;
+    std::unique_ptr<SubscriptionManager> sub_;
 };
 
 TEST_F(PlayEndToEndTestFixture, play_all) {
-  rosbag2_storage::StorageOptions storage_options;
-  storage_options.uri = database_path_ + "/test_bag_end_to_end.bag";
-  printf("storage_options uri %s\n", storage_options.uri.c_str());
-  storage_options.storage_id = "rosbag_v2";
-  rosbag2_transport::PlayOptions play_options;
-  play_options.read_ahead_queue_size = 1000;
+    rosbag2_storage::StorageOptions storage_options;
+    storage_options.uri = database_path_ + "/test_bag_end_to_end.bag";
+    printf("storage_options uri %s\n", storage_options.uri.c_str());
+    storage_options.storage_id = "rosbag_v2";
+    rosbag2_transport::PlayOptions play_options;
+    play_options.read_ahead_queue_size = 1000;
 
-  rosbag2_transport::Player player(storage_options, play_options);
-  player.play();
+    rosbag2_transport::Player player(storage_options, play_options);
+    player.play();
 
-  SUCCEED();
+    SUCCEED();
 }
 
 TEST_F(PlayEndToEndTestFixture, play_end_to_end_test_does_not_try_to_publish_ros1_topics) {
-  sub_->add_subscription<std_msgs::msg::String>("/string_topic", 2);
-  sub_->add_subscription<std_msgs::msg::Int32>("/int_topic", 2);
+    sub_->add_subscription<std_msgs::msg::String>("/string_topic", 2);
+    sub_->add_subscription<std_msgs::msg::Int32>("/int_topic", 2);
 
-  auto subscription_future = sub_->spin_subscriptions();
+    auto subscription_future = sub_->spin_subscriptions();
 
-  auto exit_code = execute_and_wait_until_completion(
-    "ros2 bag play test_bag_end_to_end.bag -s rosbag_v2", database_path_);
+    auto exit_code = execute_and_wait_until_completion(
+                         "ros2 bag play test_bag_end_to_end.bag -s rosbag_v2", database_path_);
 
-  subscription_future.get();
+    subscription_future.get();
 
-  auto string_messages = sub_->get_received_messages<std_msgs::msg::String>("/string_topic");
-  auto int_messages = sub_->get_received_messages<std_msgs::msg::Int32>("/int_topic");
+    auto string_messages = sub_->get_received_messages<std_msgs::msg::String>("/string_topic");
+    auto int_messages = sub_->get_received_messages<std_msgs::msg::Int32>("/int_topic");
 
-  EXPECT_THAT(string_messages, SizeIs(Ge(2u)));
-  EXPECT_THAT(string_messages[0]->data, StrEq("foo"));
+    EXPECT_THAT(string_messages, SizeIs(Ge(2u)));
+    EXPECT_THAT(string_messages[0]->data, StrEq("foo"));
 
-  EXPECT_THAT(int_messages, SizeIs(2));
-  EXPECT_THAT(int_messages[0]->data, Eq(42));
+    EXPECT_THAT(int_messages, SizeIs(2));
+    EXPECT_THAT(int_messages[0]->data, Eq(42));
 
-  EXPECT_THAT(exit_code, Eq(EXIT_SUCCESS));
+    EXPECT_THAT(exit_code, Eq(EXIT_SUCCESS));
 }
 
 
 TEST_F(PlayEndToEndTestFixture, play_fails_gracefully_if_rosbag_v2_storage_id_is_not_specified) {
-  internal::CaptureStderr();
-  auto exit_code =
-    execute_and_wait_until_completion("ros2 bag play test_bag.bag", database_path_);
-  auto error_output = internal::GetCapturedStderr();
+    internal::CaptureStderr();
+    auto exit_code =
+        execute_and_wait_until_completion("ros2 bag play test_bag.bag", database_path_);
+    auto error_output = internal::GetCapturedStderr();
 
-  EXPECT_THAT(exit_code, Eq(EXIT_FAILURE));
-  EXPECT_THAT(error_output, HasSubstr("No storage could be initialized"));
+    EXPECT_THAT(exit_code, Eq(EXIT_FAILURE));
+    EXPECT_THAT(error_output, HasSubstr("No storage could be initialized"));
 }
