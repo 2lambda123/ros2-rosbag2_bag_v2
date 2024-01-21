@@ -6,7 +6,7 @@ index 7e2e67171..073072934 100644
  #include <iomanip>
 
  #include <boost/foreach.hpp>
-+#include <boost/bind.hpp>
++#include <rosbag/aes_cbc_encryptor.h>
 
  #include "console_bridge/console.h"
 
@@ -14,7 +14,7 @@ index 7e2e67171..073072934 100644
      if (!chunks_.empty()) {
          throw BagException("Cannot set encryption plugin after chunks are written");
      }
--    encryptor_ = encryptor_loader_.createInstance(plugin_name);
+-    encryptor_loader_.setType("rosbag/AesCbcEncryptor");
 +    auto unmanaged_instance = encryptor_loader_.createUnmanagedInstance(plugin_name);
 +    encryptor_ = std::shared_ptr<rosbag::EncryptorBase>(unmanaged_instance);
      encryptor_->initialize(*this, plugin_param);

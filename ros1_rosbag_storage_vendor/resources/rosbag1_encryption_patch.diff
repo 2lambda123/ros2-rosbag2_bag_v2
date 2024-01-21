@@ -138,13 +138,20 @@ index 000000000..b9a0ef6b0
 +    void buildSymmetricKey();
 +
 +private:
-+    // User name of GPG key used for symmetric key encryption
++      std::string gpg_key_user_;
+    // User name of GPG key used for symmetric key encryption
 +    std::string gpg_key_user_;
 +    // Symmetric key for encryption/decryption
 +    std::basic_string<unsigned char> symmetric_key_;
 +    // Encrypted symmetric key
 +    std::string encrypted_symmetric_key_;
 +    // AES keys for encryption/decryption
+    #ifndef _WIN32
+  #include <openssl/aes.h>
+
+    AES_KEY aes_encrypt_key_;
+    AES_KEY aes_decrypt_key_;
+#else
 +    AES_KEY aes_encrypt_key_;
 +    AES_KEY aes_decrypt_key_;
 +};
